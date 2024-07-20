@@ -89,8 +89,9 @@ def bedrock_kb_response_generator(customer_input, current_boto_session):
         teh_ref = teh_ref_temp.replace("s3://algam-llm-repo/cbbvol1-data/", "").replace(".pdf","")
         response = response + teh_text + " [Referenced Section: "+teh_ref+"] \n\n "
         #st.markdown(response, unsafe_allow_html=True)
-        
+
     #for word in response.split():
+    response = response+"\n\n You go kween! 💅"
     for word in re.split(r'(\s+)', response):
         yield word + " "
         time.sleep(0.05)
@@ -124,3 +125,6 @@ if prompt := st.chat_input("What is up?"):
 
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
+    
+
+    
