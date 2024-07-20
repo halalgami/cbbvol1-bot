@@ -3,9 +3,7 @@ import random
 import time
 import boto3
 import json
-import os
-
-
+import re
 
 
 aws_access_key = st.secrets['AWS_ACCESS_KEY']
@@ -89,9 +87,11 @@ def bedrock_kb_response_generator(customer_input, current_boto_session):
         teh_text = i['generatedResponsePart']['textResponsePart']['text']
         teh_ref_temp = i['retrievedReferences'][0]['location']['s3Location']['uri']
         teh_ref = teh_ref_temp.replace("s3://algam-llm-repo/cbbvol1-data/", "").replace(".pdf","")
-        response = response + teh_text + "["+teh_ref+"]\n "
-
-    for word in response.split():
+        response = response + teh_text + " [Referenced Section: "+teh_ref+"] \n\n "
+        #st.markdown(response, unsafe_allow_html=True)
+        
+    #for word in response.split():
+    for word in re.split(r'(\s+)', response):
         yield word + " "
         time.sleep(0.05)
 
@@ -121,5 +121,6 @@ if prompt := st.chat_input("What is up?"):
         #response = st.write_stream(bedrock_response_generator(prompt,boto_session))
         response = st.write_stream(bedrock_kb_response_generator(prompt,boto_session))
     
+
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
