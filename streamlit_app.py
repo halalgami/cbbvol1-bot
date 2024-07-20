@@ -88,7 +88,7 @@ def bedrock_kb_response_generator(customer_input, current_boto_session):
         if len(i['retrievedReferences']) > 0:
             teh_ref_temp = i['retrievedReferences'][0]['location']['s3Location']['uri']        
             teh_ref = teh_ref_temp.replace("s3://algam-llm-repo/cbbvol1-data/", "").replace(".pdf","")
-            response = response + teh_text + " [Referenced Section: "+teh_ref+"] \n\n "
+            response = response + teh_text + " [Referenced Section: "+teh_ref+"](https://cbben.thomsonreuters.com/sites/default/files/net_file_store/"+teh_ref+".pdf) \n\n "
         else:
             response = response + teh_text
         #st.markdown(response, unsafe_allow_html=True)
