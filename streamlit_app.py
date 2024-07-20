@@ -56,7 +56,28 @@ def bedrock_response_generator(customer_input, current_boto_session):
         yield word + " "
         time.sleep(0.05)
 
-
+def bedrock_sassiness_generator(current_boto_session):    
+    client = current_boto_session.client(
+        service_name='bedrock-runtime',
+        region_name=aws_bedrock_region
+    )
+    
+    prompt = f"\n\nHuman:can you generate me something sassy that encourages my female readers to be more outgoing? limit it to one sentence and respond with ONLY the sentence!\n\nAssistant:"
+    
+    body = json.dumps({
+        "prompt": prompt,
+        "max_tokens_to_sample": 1000,
+        "temperature": 0.75
+    })
+    response = client.invoke_model(
+        body=body,
+        modelId=aws_bedrock_model_id,
+        accept='application/json',
+        contentType='application/json'
+    )
+    response = json.loads(response.get('body').read())["completion"]
+    return response
+    
 def bedrock_kb_response_generator(customer_input, current_boto_session):        
     client = current_boto_session.client(
         service_name='bedrock-agent-runtime',
@@ -94,7 +115,9 @@ def bedrock_kb_response_generator(customer_input, current_boto_session):
         #st.markdown(response, unsafe_allow_html=True)
 
     #for word in response.split():
-    response = response+"\n\n You go kween! 💅"
+    sass_resp = bedrock_sassiness_generator(current_boto_session)
+    response = response+f"\n\n {sass_resp} 💅"
+
     for word in re.split(r'(\s+)', response):
         yield word + " "
         time.sleep(0.05)
