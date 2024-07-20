@@ -85,9 +85,12 @@ def bedrock_kb_response_generator(customer_input, current_boto_session):
     for i in citations:
         #first we add the text.
         teh_text = i['generatedResponsePart']['textResponsePart']['text']
-        teh_ref_temp = i['retrievedReferences'][0]['location']['s3Location']['uri']
-        teh_ref = teh_ref_temp.replace("s3://algam-llm-repo/cbbvol1-data/", "").replace(".pdf","")
-        response = response + teh_text + " [Referenced Section: "+teh_ref+"] \n\n "
+        if len(i['retrievedReferences']) > 0:
+            teh_ref_temp = i['retrievedReferences'][0]['location']['s3Location']['uri']        
+            teh_ref = teh_ref_temp.replace("s3://algam-llm-repo/cbbvol1-data/", "").replace(".pdf","")
+            response = response + teh_text + " [Referenced Section: "+teh_ref+"] \n\n "
+        else:
+            response = response + teh_text
         #st.markdown(response, unsafe_allow_html=True)
 
     #for word in response.split():
